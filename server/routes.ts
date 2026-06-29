@@ -6,17 +6,8 @@ import { z } from "zod";
 import { initBot, isBotOnline, botClient } from "./bot";
 import { ensureYearColumn } from "./db";
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-
-  // Ensure database schema is updated BEFORE handling requests
-  console.log("[routes] Ensuring database schema is up to date...");
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   await ensureYearColumn();
-  console.log("[routes] Database schema check complete");
-
-  // Start Discord Bot
   initBot().catch(console.error);
 
   app.get(api.accounts.list.path, async (req, res) => {
@@ -44,9 +35,7 @@ export async function registerRoutes(
     try {
       const id = Number(req.params.id);
       const account = await storage.getAccount(id);
-      if (!account) {
-        return res.status(404).json({ message: "Account not found" });
-      }
+      if (!account) return res.status(404).json({ message: "Account not found" });
       await storage.deleteAccount(id);
       res.status(204).send();
     } catch (err) {
