@@ -212,31 +212,35 @@ export async function initBot() {
 
           let robloxId: any = null, headshot: any = null, accountAge = "Unknown", createdDate = "Unknown", isBanned = false;
 
+          const fetchWithTimeout = (url: string, opts: any = {}) => {
+            const ctrl = new AbortController();
+            setTimeout(() => ctrl.abort(), 4000);
+            return fetch(url, { ...opts, signal: ctrl.signal });
+          };
+
           try {
-            const userRes = await fetch('https://users.roblox.com/v1/usernames/users', {
+            const userRes = await fetchWithTimeout('https://users.roblox.com/v1/usernames/users', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ usernames: [account.username], excludeBannedUsers: false })
             });
             const userDataRes = await userRes.json();
-            
+
             if (userDataRes.data?.[0]) {
-              const robloxUser = userDataRes.data[0];
-              robloxId = robloxUser.id;
-              isBanned = robloxUser.isBanned === true; 
+              robloxId = userDataRes.data[0].id;
+              isBanned = userDataRes.data[0].isBanned === true;
 
-              const detailRes = await fetch(`https://users.roblox.com/v1/users/${robloxId}`);
-              const detailData = await detailRes.json();
-              
+              const [detailData, thumbData] = await Promise.all([
+                fetchWithTimeout(`https://users.roblox.com/v1/users/${robloxId}`).then(r => r.json()).catch(() => ({})),
+                fetchWithTimeout(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${robloxId}&size=420x420&format=Png`).then(r => r.json()).catch(() => ({})),
+              ]);
+
               if (detailData.isBanned) isBanned = true;
-
               if (detailData.created) {
                 const created = new Date(detailData.created);
                 createdDate = created.toLocaleDateString();
                 accountAge = `${Math.ceil(Math.abs(Date.now() - created.getTime()) / 86400000)} days`;
               }
-              const thumbRes = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${robloxId}&size=420x420&format=Png`);
-              const thumbData = await thumbRes.json();
               if (thumbData.data?.[0]) headshot = thumbData.data[0].imageUrl;
             }
           } catch (e: any) { console.error("Roblox API Error:", e.message); }
