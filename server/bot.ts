@@ -199,8 +199,8 @@ export async function initBot() {
           if (!account) {
             const outOfStockEmbed = new EmbedBuilder()
               .setColor(0xED4245)
-              .setTitle('<a:emoji_62:1521234210176630964>  Out Of Stock!')
-              .setDescription('database out of stock check back later.');
+              .setTitle('Out of Stock')
+              .setDescription('no accounts available right now, check back later.');
             await interaction.editReply({ embeds: [outOfStockEmbed] });
             setTimeout(() => interaction.deleteReply().catch(() => {}), 10000);
             return;
@@ -245,10 +245,8 @@ export async function initBot() {
 
           const dmEmbed = new EmbedBuilder()
             .setColor(isBanned ? 0xFFFF00 : 0x2ecc71)
-            .setTitle(isBanned 
-              ? '<:yellow:1480440004915237009> Account Generated!' 
-              : '<:green:1480439954008969278> Account Generated!')
-            .setDescription(isBanned ? '⚠️ **Note:** This account is currently banned.' : 'Here are your account details:')
+            .setTitle(isBanned ? 'Account Generated (Banned)' : 'Account Generated')
+            .setDescription(isBanned ? 'this account is currently banned.' : 'here are your account details.')
             .addFields(
               { name: 'Username', value: account.username, inline: false },
               { name: 'Password', value: `||${account.password}||`, inline: false },
@@ -263,29 +261,29 @@ export async function initBot() {
           }
 
           const dmRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-            new ButtonBuilder().setLabel('🌐 Roblox Login').setURL('https://www.roblox.com/login').setStyle(ButtonStyle.Link),
-            new ButtonBuilder().setCustomId(`inventory_${robloxId || 'unknown'}`).setLabel('❓️ Inventory').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId(`copy_combo_${account.username}_${account.password}`).setLabel('📋 Copy Combo').setStyle(ButtonStyle.Primary) 
+            new ButtonBuilder().setLabel('Roblox Login').setURL('https://www.roblox.com/login').setStyle(ButtonStyle.Link),
+            new ButtonBuilder().setCustomId(`inventory_${robloxId || 'unknown'}`).setLabel('Inventory').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId(`copy_combo_${account.username}_${account.password}`).setLabel('Copy Combo').setStyle(ButtonStyle.Primary) 
           );
 
           try {
             await interaction.user.send({ embeds: [dmEmbed], components: [dmRow] });
             const successEmbed = new EmbedBuilder()
               .setColor(0x57F287)
-              .setTitle('<a:emoji_63:1521234233945755678>  Account Succesfully Generated !')
+              .setTitle('Account Generated')
               .setDescription('check your dms for the account details.');
 
             await interaction.editReply({ 
               embeds: [successEmbed], 
               components: [new ActionRowBuilder<ButtonBuilder>().addComponents(
-                new ButtonBuilder().setLabel('📌 View Message').setURL('https://discord.com/channels/@me').setStyle(ButtonStyle.Link)
+                new ButtonBuilder().setLabel('View Message').setURL('https://discord.com/channels/@me').setStyle(ButtonStyle.Link)
               )] 
             });
           } catch {
             const failEmbed = new EmbedBuilder()
               .setColor(0x95A5A6)
-              .setTitle('<a:emoji_63:1521234297292456137>  OOPS Something went wrong')
-              .setDescription('check if your dms are enabled and try again.');
+              .setTitle('Something went wrong')
+              .setDescription('make sure your dms are open and try again.');
             await interaction.editReply({ embeds: [failEmbed] });
           }
         }
