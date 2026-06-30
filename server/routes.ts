@@ -8,7 +8,9 @@ import { ensureYearColumn } from "./db";
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   await ensureYearColumn();
-  initBot().catch(console.error);
+  if (process.env.NODE_ENV === 'production') {
+    initBot().catch(console.error);
+  }
 
   app.get(api.accounts.list.path, async (req, res) => {
     const accounts = await storage.getAccounts();
