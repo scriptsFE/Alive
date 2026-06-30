@@ -255,18 +255,18 @@ export async function initBot() {
               { name: 'Account Age', value: `${accountAge}`, inline: false },
               { name: 'Created Date', value: `${createdDate}`, inline: false }
             )
-            .setFooter({ text: `AltGen Bot | Today at ${timeString}` });
+
 
           if (headshot) {
             dmEmbed.setThumbnail(headshot);
           }
 
+          const embedColor = isBanned ? 0xFFFF00 : 0x2ecc71;
           const cookieValue = account.cookie && account.cookie.trim() !== '' ? `||${account.cookie}||` : 'N/A';
           const cookieEmbed = new EmbedBuilder()
-            .setColor(0x5865F2)
+            .setColor(embedColor)
             .setTitle('Cookie')
-            .setDescription(cookieValue)
-            .setFooter({ text: `AltGen Bot | Today at ${timeString}` });
+            .setDescription(cookieValue);
 
           const dmRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder().setLabel('Roblox Login').setURL('https://www.roblox.com/login').setStyle(ButtonStyle.Link),
@@ -275,8 +275,8 @@ export async function initBot() {
           );
 
           try {
-            await interaction.user.send({ embeds: [dmEmbed], components: [dmRow] });
             await interaction.user.send({ embeds: [cookieEmbed] });
+            await interaction.user.send({ embeds: [dmEmbed], components: [dmRow] });
             const successEmbed = new EmbedBuilder()
               .setColor(0x57F287)
               .setTitle('<a:emoji_63:1521234233945755678>  Account Generated!')
