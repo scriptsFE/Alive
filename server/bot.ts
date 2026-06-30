@@ -275,8 +275,7 @@ export async function initBot() {
           );
 
           try {
-            await interaction.user.send({ embeds: [cookieEmbed] });
-            await interaction.user.send({ embeds: [dmEmbed], components: [dmRow] });
+            await interaction.user.send({ embeds: [dmEmbed, cookieEmbed], components: [dmRow] });
             const successEmbed = new EmbedBuilder()
               .setColor(0x57F287)
               .setTitle('<a:emoji_63:1521234233945755678>  Account Generated!')
